@@ -12,21 +12,22 @@ import java.time.Duration;
 
 public class OrderPage {
     private WebDriver driver;
-    private final By ORDER_PAGE_HEADER = By.className("Order_Header__BZXOb");
-    private final By INPUT_NAME = By.xpath("//input[@placeholder ='* Имя']");
-    private final By INPUT_SURNAME = By.xpath("//input[@placeholder ='* Фамилия']");
-    private final By INPUT_ADDRESS = By.xpath("//input[@placeholder ='* Адрес: куда привезти заказ']");
-    private final By INPUT_METRO_STATION = By.xpath("//input[@placeholder ='* Станция метро']");
-    private final By INPUT_PHONE_NUMBER = By.xpath("//input[@placeholder ='* Телефон: на него позвонит курьер']");
-    private final By NEXT_BUTTON = By.cssSelector("#root > div > div.Order_Content__bmtHS > div.Order_NextButton__1_rCA > button");
-    private final By INPUT_DATE = By.xpath("//input[@placeholder ='* Когда привезти самокат']");
-    private final By INPUT_DATE_PICKER = By.xpath("//*[@id=\"root\"]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div/div/div[2]/div[2]/div[5]/div[5]");
+    private final By ORDER_PAGE_HEADER = By.xpath(".//div[contains(@class, 'Order_Header')]");
+    private final By INPUT_NAME = By.xpath(".//input[@placeholder ='* Имя']");
+    private final By INPUT_SURNAME = By.xpath(".//input[@placeholder ='* Фамилия']");
+    private final By INPUT_ADDRESS = By.xpath(".//input[@placeholder ='* Адрес: куда привезти заказ']");
+    private final By INPUT_METRO_STATION = By.xpath(".//input[@placeholder ='* Станция метро']");
+    private final By INPUT_PHONE_NUMBER = By.xpath(".//input[@placeholder ='* Телефон: на него позвонит курьер']");
+    private final By NEXT_BUTTON = By.xpath(".//div[contains(@class, 'Order_NextButton')]/button[contains(@class, 'Button_Button')]");
+    private final By INPUT_DATE = By.xpath(".//input[@placeholder ='* Когда привезти самокат']");
+    private final By INPUT_DATE_PICKER = By.xpath(".//div[contains(@class, 'react-datepicker__day--today')]");
     private final By INPUT_RENTAL_PERIOD = By.className("Dropdown-placeholder");
     private final By INPUT_RENTAL_DAY = By.xpath(".//div[@class='Dropdown-menu']/div[text()='сутки']");
-    private final By COMMENT = By.cssSelector("#root > div > div.Order_Content__bmtHS > div.Order_Form__17u6u > div.Input_InputContainer__3NykH > input");
-    private final By ORDER_BUTTON = By.xpath("//div[@class='Order_Buttons__1xGrp']//button[contains(text(), 'Заказать')]");
+    private final By CHECKBOXES = By.xpath(".//div[contains(@class, 'Order_Checkboxes')]//input");
+    private final By COMMENT = By.xpath(".//input[@placeholder ='Комментарий для курьера']");
+    private final By ORDER_BUTTON = By.xpath("//div[contains(@class, 'Order_Buttons')]//button[contains(text(), 'Заказать')]");
     private final By CONFIRM_BUTTON = By.xpath("//button[contains(text(), 'Да')]");
-    public final By SUCCESS_TEXT = By.xpath("//*[@id=\"root\"]/div/div[2]/div[5]/div[1]");
+    public final By SUCCESS_TEXT = By.xpath("//div[(text()= 'Заказ оформлен')]");
 
     public OrderPage(WebDriver driver) {
         this.driver = driver;
@@ -35,6 +36,11 @@ public class OrderPage {
     public void waitForLoadOrderPage(){
         new WebDriverWait(driver, Duration.ofSeconds(5))
                 .until(ExpectedConditions.visibilityOfElementLocated(ORDER_PAGE_HEADER));
+    }
+
+    public void waitForLoadSuccessText(){
+        new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(ExpectedConditions.visibilityOfElementLocated(SUCCESS_TEXT));
     }
 
     public WebElement getName() {
@@ -81,6 +87,10 @@ public class OrderPage {
         return driver.findElement(INPUT_RENTAL_DAY);
     }
 
+    public void clickCheckboxes() {
+        driver.findElements(CHECKBOXES).forEach(checkbox -> checkbox.click());
+    }
+
     public WebElement getComment() {
         return driver.findElement(COMMENT);
     }
@@ -91,10 +101,6 @@ public class OrderPage {
 
     public WebElement getConfirmButton() {
         return driver.findElement(CONFIRM_BUTTON);
-    }
-
-    public boolean isDisplayedSuccessText() {
-        return driver.findElement(SUCCESS_TEXT).isDisplayed();
     }
 
     public void sendTheFirstForm(WebDriver driver, String name, String surname, String address, String station, String phoneNumber) {
@@ -111,6 +117,12 @@ public class OrderPage {
         getInputDatePicker().click();
         getRentalPeriod().click();
         getRentalDay().click();
+        clickCheckboxes();
         getComment().sendKeys(comment);
+    }
+
+    public boolean isDisplayedSuccessText() {
+        System.out.println(driver.findElement(SUCCESS_TEXT).getText());
+        return driver.findElement(SUCCESS_TEXT).isDisplayed();
     }
 }
