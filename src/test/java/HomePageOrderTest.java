@@ -9,7 +9,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import page.HomePage;
 import page.OrderPage;
-
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
@@ -41,21 +40,24 @@ public class HomePageOrderTest {
     public static Object[][] getData() {
         HomePage homePage = new HomePage();
         return new Object[][]{
-                {"Chrome", "Иванов", "Иван", "119049, г Москва, ул Донская, д 18", "89001002030", "Сокол", "Хочу самокат", homePage.getOrderButtonHeader()},
-                {"Chrome", "Петров", "Петр", "101000, г Москва, ул Пушкина, д 7", "+79991002039", "Лубянка", "Жду заказ как можно быстрее", homePage.getOrderButtonBottom()},
-                {"Chrome", "Иванов", "Иван", "119049, г Москва, ул Донская, д 18", "89001002030", "Сокол", "Хочу самокат", homePage.getOrderButtonHeader()},
-                {"Chrome", "Петров", "Петр", "101000, г Москва, ул Пушкина, д 7", "+79991002039", "Лубянка", "Жду заказ как можно быстрее", homePage.getOrderButtonBottom()},
+                {"Chrome", "Иван", "Иванов", "г. Москва, ул. Тверская, д. 24", "89001002030", "Сокол", "Хочу самокат", homePage.getOrderButtonHeader()},
+                {"Chrome", "Петр", "Петров", "г. Москва, ул. Долгоруковская, д. 30", "+79991002039", "Лубянка", "Жду заказ как можно быстрее", homePage.getOrderButtonBottom()},
+                {"Firefox", "Иван", "Иванов", "г. Москва, ул. Тверская, д. 24", "89001002030", "Сокол", "Хочу самокат", homePage.getOrderButtonHeader()},
+                {"Firefox", "Петр", "Петров", "г. Москва, ул. Долгоруковская, д. 30", "+79991002039", "Лубянка", "Жду заказ как можно быстрее", homePage.getOrderButtonBottom()},
         };
     }
 
     @Before
     public void setUp() {
-        if (browserName.equals("Chrome")) {
-            driver = new ChromeDriver();
-            driver.get("https://qa-scooter.praktikum-services.ru/");
-        } else if (browserName.equals("Firefox")) {
-            driver = new FirefoxDriver();
-            driver.get("https://qa-scooter.praktikum-services.ru/");
+        switch (browserName) {
+            case "Chrome":
+                driver = new ChromeDriver();
+                driver.get("https://qa-scooter.praktikum-services.ru/");
+                break;
+            case "Firefox":
+                driver = new FirefoxDriver();
+                driver.get("https://qa-scooter.praktikum-services.ru/");
+                break;
         }
     }
 
@@ -73,6 +75,7 @@ public class HomePageOrderTest {
 
         orderPage.getOrderButton().click();
         orderPage.getConfirmButton().click();
+        orderPage.waitForLoadSuccessText();
 
         assertTrue("Сообщение об успешном заказе отсутствует", orderPage.isDisplayedSuccessText());
     }
