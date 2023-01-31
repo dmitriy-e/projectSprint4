@@ -1,3 +1,4 @@
+import constant.Env;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,13 +10,13 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import page.HomePage;
 import page.OrderPage;
+
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 public class HomePageOrderTest {
 
     private WebDriver driver;
-    private final String browserName;
     private final String name;
     private final String surname;
     private final String address;
@@ -24,8 +25,7 @@ public class HomePageOrderTest {
     private final String comment;
     private final By clickOrderButton;
 
-    public HomePageOrderTest(String browserName, String name, String surname, String address, String phoneNumber, String station, String comment, By clickOrderButton) {
-        this.browserName = browserName;
+    public HomePageOrderTest(String name, String surname, String address, String phoneNumber, String station, String comment, By clickOrderButton) {
         this.name = name;
         this.surname = surname;
         this.address = address;
@@ -40,23 +40,21 @@ public class HomePageOrderTest {
     public static Object[][] getData() {
         HomePage homePage = new HomePage();
         return new Object[][]{
-                {"Chrome", "Иван", "Иванов", "г. Москва, ул. Тверская, д. 24", "89001002030", "Сокол", "Хочу самокат", homePage.getOrderButtonHeader()},
-                {"Chrome", "Петр", "Петров", "г. Москва, ул. Долгоруковская, д. 30", "+79991002039", "Лубянка", "Жду заказ как можно быстрее", homePage.getOrderButtonBottom()},
-                {"Firefox", "Иван", "Иванов", "г. Москва, ул. Тверская, д. 24", "89001002030", "Сокол", "Хочу самокат", homePage.getOrderButtonHeader()},
-                {"Firefox", "Петр", "Петров", "г. Москва, ул. Долгоруковская, д. 30", "+79991002039", "Лубянка", "Жду заказ как можно быстрее", homePage.getOrderButtonBottom()},
+                {"Иван", "Иванов", "г. Москва, ул. Тверская, д. 24", "89001002030", "Сокол", "Хочу самокат", homePage.getOrderButtonHeader()},
+                {"Петр", "Петров", "г. Москва, ул. Долгоруковская, д. 30", "+79991002039", "Лубянка", "Жду заказ как можно быстрее", homePage.getOrderButtonBottom()},
         };
     }
 
     @Before
     public void setUp() {
-        switch (browserName) {
-            case "Chrome":
-                driver = new ChromeDriver();
-                driver.get("https://qa-scooter.praktikum-services.ru/");
-                break;
+        switch (Env.BROWSER_NAME) {
             case "Firefox":
                 driver = new FirefoxDriver();
-                driver.get("https://qa-scooter.praktikum-services.ru/");
+                driver.get(Env.URL);
+                break;
+            default:
+                driver = new ChromeDriver();
+                driver.get(Env.URL);
                 break;
         }
     }
@@ -68,7 +66,7 @@ public class HomePageOrderTest {
 
         OrderPage orderPage = new OrderPage(driver);
         orderPage.waitForLoadOrderPage();
-        orderPage.sendTheFirstForm(driver, name, surname, address, station, phoneNumber);
+        orderPage.sendTheFirstForm(name, surname, address, station, phoneNumber);
         orderPage.clickNextButton();
 
         orderPage.sendTheSecondForm(comment);
